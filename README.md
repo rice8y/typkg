@@ -9,7 +9,7 @@ Installed packages can be used in Typst with the local import syntax:
 ```
 
 > [!NOTE] 
-> Typst also supports official preview packages with `@preview/<package>:<version>`
+> Typst also supports official preview packages with `@preview/<package>:<version>`. 
 TyPkg does not interact with the official registry. It is intended for packages that are not published officially and need to be installed locally.
 
 Traditionally, installing a local package required cloning the repository and copying it into a directory where Typst could see it, sometimes using a `justfile` with `just install`. TyPkg automates this process.
