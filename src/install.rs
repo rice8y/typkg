@@ -9,7 +9,13 @@ use fs_extra::dir::CopyOptions;
 use crate::toml::read_name_version;
 use crate::system::get_local_package_dir;
 
-pub fn install(source: &str, verbose: bool) -> Result<()> {
+pub fn install(source: &str, verbose: bool, force: bool) {
+    if let Err(e) = try_install(source, verbose, force) {
+        eprintln!("{} {}", "Error:".red().bold(), e);
+    }
+}
+
+fn try_install(source: &str, verbose: bool, force: bool) -> Result<()> {
     let tmp = tempdir()?;
     let tmp_path = tmp.path().join("repo");
 
@@ -24,7 +30,7 @@ pub fn install(source: &str, verbose: bool) -> Result<()> {
 
     if source.starts_with("http") {
         let mut cmd = Command::new("git");
-        cmd.args(["clone", "--depth", "1", source, repo_path.to_str().unwrap()]);
+        cmd.args(["clone", "--depth", "1", source, tmp_path.to_str().unwrap()]);
         if !verbose {
             cmd.stdout(Stdio::null()).stderr(Stdio::null());
         }
@@ -53,6 +59,8 @@ pub fn install(source: &str, verbose: bool) -> Result<()> {
 
     let mut options = CopyOptions::new();
     options.copy_inside = true;
+    options.content_only = true;
+    options.overwrite = force;
 
     fs_extra::dir::copy(&tmp_path, &target_dir, &options)?;
 
@@ -64,6 +72,7 @@ pub fn install(source: &str, verbose: bool) -> Result<()> {
         version,
         target_dir.display()
     );
+
     Ok(())
 }
 
