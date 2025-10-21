@@ -36,10 +36,7 @@ pub fn install(source: &str, verbose: bool) -> Result<()> {
         }
     } else {
         fs::create_dir_all(&tmp_path)?;
-        let mut options = CopyOptions::new();
-        options.overwrite = true;
-        options.copy_inside = true;
-        fs_extra::dir::copy(&tmp_path, &target_dir, &options)?;
+        fs_extra::dir::copy(source, &tmp_path, &fs_extra::dir::CopyOptions::new())?;
     }
 
     spinner.set_message("Reading typst.toml...");
@@ -53,7 +50,12 @@ pub fn install(source: &str, verbose: bool) -> Result<()> {
         .join(&version);
 
     fs::create_dir_all(&target_dir)?;
-    fs_extra::dir::copy(&tmp_path, &target_dir, &fs_extra::dir::CopyOptions::new())?;
+
+    let mut options = CopyOptions::new();
+    options.overwrite = true;
+    options.copy_inside = true;
+
+    fs_extra::dir::copy(&tmp_path, &target_dir, &options)?;
 
     spinner.finish_and_clear();
     println!(
