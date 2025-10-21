@@ -24,6 +24,8 @@ enum Commands {
         source: String,
         #[arg(short, long, help = "Show detailed output during installation")]
         verbose: bool,
+        #[arg(long, help = "Overwrite existing package if already installed")]
+        force: bool,
     },
     Clean {
         #[arg(help = "Name of the installed Typst package")]
@@ -42,7 +44,9 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Install { source, verbose } => install::install(&source, verbose)?,
+        Commands::Install { source, verbose, force } => {
+            install::install(&source, verbose, force);
+        }
         Commands::Clean { name, version } => install::clean(&name, &version)?,
         Commands::List { verbose } => {
             if verbose {
