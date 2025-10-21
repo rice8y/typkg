@@ -11,7 +11,7 @@ use crate::system::get_local_package_dir;
 
 pub fn install(source: &str, verbose: bool) -> Result<()> {
     let tmp = tempdir()?;
-    let tmp_path = tmp.path();
+    let tmp_path = tmp.path().join("repo");
 
     let spinner = ProgressBar::new_spinner();
     spinner.set_style(
@@ -24,7 +24,7 @@ pub fn install(source: &str, verbose: bool) -> Result<()> {
 
     if source.starts_with("http") {
         let mut cmd = Command::new("git");
-        cmd.args(["clone", "--depth", "1", source, tmp_path.to_str().unwrap()]);
+        cmd.args(["clone", "--depth", "1", source, repo_path.to_str().unwrap()]);
         if !verbose {
             cmd.stdout(Stdio::null()).stderr(Stdio::null());
         }
@@ -52,7 +52,6 @@ pub fn install(source: &str, verbose: bool) -> Result<()> {
     fs::create_dir_all(&target_dir)?;
 
     let mut options = CopyOptions::new();
-    options.overwrite = true;
     options.copy_inside = true;
 
     fs_extra::dir::copy(&tmp_path, &target_dir, &options)?;
