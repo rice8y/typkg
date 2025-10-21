@@ -5,6 +5,7 @@ use tempfile::tempdir;
 use anyhow::{Result, Context};
 use colored::*;
 use indicatif::{ProgressBar, ProgressStyle};
+use fs_extra::dir::CopyOptions;
 use crate::toml::read_name_version;
 use crate::system::get_local_package_dir;
 
@@ -35,7 +36,10 @@ pub fn install(source: &str, verbose: bool) -> Result<()> {
         }
     } else {
         fs::create_dir_all(&tmp_path)?;
-        fs_extra::dir::copy(source, &tmp_path, &fs_extra::dir::CopyOptions::new())?;
+        let mut options = CopyOptions::new();
+        options.overwrite = true;
+        options.copy_inside = true;
+        fs_extra::dir::copy(&tmp_path, &target_dir, &options)?;
     }
 
     spinner.set_message("Reading typst.toml...");
