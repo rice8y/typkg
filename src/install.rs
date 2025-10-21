@@ -11,7 +11,7 @@ use crate::system::get_local_package_dir;
 
 pub fn install(source: &str, verbose: bool) -> Result<()> {
     let tmp = tempdir()?;
-    let tmp_path = tmp.path().join("repo");
+    let tmp_path = tmp.path();
 
     let spinner = ProgressBar::new_spinner();
     spinner.set_style(
